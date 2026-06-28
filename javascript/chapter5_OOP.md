@@ -606,3 +606,151 @@ Allowing different objects to respond differently to the same method call.
 
 ## Interview points 
 
+## Interview Points
+
+**Q: What is the output? (Objects are copied by reference)**
+
+i)
+```javascript
+const obj1 = { a: 1 };
+
+const obj2 = obj1;
+
+obj2.a = 10;
+
+console.log(obj1.a);
+```
+
+Output:
+```
+10
+```
+
+---
+
+**Q: What is the output? (Shallow Copy)**
+
+ii)
+```javascript
+const obj = {
+    skills: ["JavaScript"]
+};
+
+const copy = { ...obj };
+
+copy.skills.push("React");
+
+console.log(obj.skills);
+```
+
+Output:
+```
+["JavaScript", "React"]
+```
+
+---
+
+**Q: What is the output? (Prototype Lookup)**
+
+iii)
+```javascript
+const parent = {
+    greet() {
+        return "Hello";
+    }
+};
+
+const child = Object.create(parent);
+
+console.log(child.greet());
+```
+
+Output:
+```
+Hello
+```
+
+---
+
+**Q: What is the output? (`Object.freeze()`)**
+
+iv)
+```javascript
+const obj = {
+    name: "Saksham"
+};
+
+Object.freeze(obj);
+
+obj.name = "John";
+
+console.log(obj.name);
+```
+
+Output:
+```
+Saksham
+```
+
+---
+
+**Q: What is the output? (`Object.seal()`)**
+
+v)
+```javascript
+const obj = {
+    name: "Saksham"
+};
+
+Object.seal(obj);
+
+obj.name = "John";
+
+console.log(obj.name);
+```
+
+Output:
+```
+John
+```
+
+---
+
+**Q: What is the difference between `__proto__` and `prototype`?**
+
+`__proto__`
+- Immediate prototype of an object.
+
+`prototype`
+- Property of constructor functions.
+- Used as the prototype for objects created using `new`.
+
+---
+
+**Q: Does every object have a `prototype` property?**
+
+No.
+
+```javascript
+const obj = {};
+
+console.log(obj.prototype);
+```
+
+Output:
+```
+undefined
+```
+
+Only constructor functions and classes have a meaningful `prototype` property.
+
+---
+
+**Q: Why does `Object.create(null)` exist?**
+
+It creates an object with no prototype.
+
+Such objects:
+- do not inherit from `Object.prototype`
+- do not have methods like `toString()` or `hasOwnProperty()`
+- are commonly used as pure key-value dictionaries.
