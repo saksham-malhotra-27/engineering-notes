@@ -438,12 +438,171 @@ const person = {
     }
 }
 
-const student = Object.create(person); // or new Person()
+// JS creates a empty object and secretly stores : student.[[Prototype]] = person
+// student itself has no properties 
+// student.entries() -> will be empty array
+const student = Object.create(person);
 
 student.greet() // hello
 
+// Is student's prototype exactly the person object?
 console.log(student.__proto__ === person) // true
-console.log(student.__proto__ === Object.prototype) // false
-
-// `prototype` property of constructor is used to create the `[[prototype]]` of objects created by it
 ```
+
+In the above example, what if we wrote `student.__proto__ === Object.prototype`? 
+- Then it will be `false`. Every object has some properties/methods from `Object.prototype` on the prototype chain. That are like `toString()`, `hasOwnProperty()`, `valueOf`, etc. 
+- `__proto__` returns the immediate prototype of an object, not the entire prototype chain.
+
+#### Functions prototype
+
+- `objectName.__proto__` and `functionName.__proto__` are equivalent in the sense that they both mean: "Give me the immediate prototype of this object." 
+- functionName.prototype is a new Object created for that particular function by default. Example: 
+```javascript
+function greet(){
+    console.log("hello")
+}
+function greet2(){
+
+}
+
+console.log(greet.__proto__ === Object.prototype) // true 
+console.log(greet.prototype === Object.prototype) // true 
+console.log(greet.__proto__ === greet2.__proto__) // true 
+console.log(greet.__proto__ === greet2.prototype) // false 
+console.log(greet.prototype === greet2.prototype) // false 
+```
+
+```
+Person (function)
+    │
+    ├── __proto__ ─────────────► Function.prototype
+    │
+    └── prototype ─────────────► {}  (Person's own prototype object)
+                                      │
+                                      ▼
+                               Object.prototype
+```
+
+**Tl;dr:**
+
+- `__proto__` = "object's immediate prototype"
+- `prototype` = "only in classes or functions"
+
+### Methods to work with prototype chain 
+
+#### Get Immediate Prototype 
+
+- `Object.getPrototypeOf(obj)`  
+- `obj.__proto__`  
+
+#### Get Constructor's prototype
+
+- `functionName.prototype`  
+Example : 
+```javascript
+const animal = { name: "Animal" };
+const rabbit = Object.create(animal, {
+    legs: { value: 4 }
+});
+const proto = Object.getPrototypeOf(rabbit);
+console.log(proto === animal); // true
+console.log(animal.name);    // Animal
+console.log(rabbit.name);    // Animal (inherited)
+console.log(rabbit.legs);    // 4
+```
+
+#### Set or change prototype 
+`Object.setPrototypeOf(obj, prototype)` changes the prototype of an existing object. 
+
+```Javascript 
+const car = {wheels:4}
+const vehicle = {wheels:2}
+
+Object.setPrototypeOf(car, vehicle)
+// Now car inherits from vehicle
+console.log(car.wheels) // 4 (own property) 
+console.log(vehicle.wheels) // 2 (own property) 
+console.log(Object.getPrototypeOf(car) === vehicle) // true 
+
+// Important Note: 
+// Never use `Object.setPrototypeOf()` to change prototype.  
+// Prefer Object.create() instead of Object.setPrototypeOf(). 
+// It modifies the internal [[Prototype]] link directly which can break the internal invariants of the object and break the internal link of the parent.  
+```
+
+#### Remove Prototype 
+```javascript
+const obj = {a:1}
+Object.setPrototypeOf(obj, null) // Removes prototype
+
+console.log(obj.__proto__) // null
+console.log(obj.__proto__ === null) // true
+console.log(Object.getPrototypeOf(obj) === null) // true
+```
+
+#### Get full prototype chain 
+
+There is no single built-in method for this 
+but you can do it - 
+```javascript
+function getPrototypeChain(obj){
+    const chain = []; 
+    let current = obj;
+    while(current){
+        chain.push(current)
+        current = current.__proto__
+        // or use standard API Object.getPrototypeOf(current)
+    }
+    return chain 
+} 
+```
+
+## 5.7 Classes
+
+### Why were Classes introduced?
+
+Classes were introduced in ES6 to provide a cleaner syntax over JavaScript's prototype-based inheritance. Internally, classes still use prototypes.
+
+### Constructor
+
+The constructor initializes object properties when an object is created.
+
+### Instance Methods
+
+Methods available on every object created using the class.
+
+### Static Methods
+
+Static methods belong to the class itself and cannot be called by instances.
+
+### Getters & Setters
+
+Special methods that provide controlled access to object properties.
+
+### extends
+
+Used to inherit from another class.
+
+### super
+
+Used to access parent constructor or parent methods.
+
+## 5.8 OOP Principles
+
+### Encapsulation  
+
+Bundling data and methods together while hiding implementation details 
+
+### Abstraction 
+
+Exposing only neccessary functionality while hiding internal complexity 
+
+### Inheritance 
+creating new classes using existing classes. 
+
+### Polymorphism 
+
+Allowing different objects to respond differently to the same method call. 
+
+## Interview points 
+
